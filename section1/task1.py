@@ -1,3 +1,6 @@
+# coding=utf-8
+import csv
+import math
 import random
 
 random.seed(1234)  # fix randomness
@@ -12,6 +15,47 @@ def kNN(k, train_set, test_set):
     :param test_set: test set, a list of lists where each nested list is a test instance
     :return: percent accuracy for the test set, e.g., 78.42
     """
+    
+    """
+    rows = []
+    with open(pathOfInput) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            row.append(altitude_value)
+            rows.append(row)
+        # print(rows)
+    csv_file.close()
+
+    """
+
+    train_instances = []
+    with open(train_set) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            train_instances.append(row)
+
+    test_instances = []
+    with open(test_set) as csv_file_2:
+        csv_reader_2 = csv.reader(csv_file_2, delimiter=',')
+        for row in csv_reader_2:
+            test_instances.append(row)
+
+    neighbors_distance_list = []  # sublist - first element = index, second = distance, third = label
+    for line in train_instances:
+        # print(line)
+        line_length = len(line)
+        # print("length = {}".format(line_length))
+        label = line[line_length - 1]
+        # print("label of instance = {}".format(label))
+        for feature in line[:line_length - 1]:
+            tmp_distance = 0.0
+            for index, feature_2 in enumerate(line[:line_length - 1]):
+                if feature == feature_2:
+                    continue
+                else:
+                    tmp_distance += euclidean_distance(float(feature), float(feature_2))
+            # calculate one line with all others
+            # when calculating chech each features
     pass
 
 
@@ -31,3 +75,10 @@ def find_best_k(train_set, test_set, num_folds):
     :return: a tuple, best k value and percent accuracy for the test set using the best k value, e.g., (3, 80.06)
     """
     pass
+
+
+def euclidean_distance(value1, value2):
+    return (value1 ** 2 + value2 ** 2) ** 0.5
+
+
+kNN(3, "task1_test.txt", "task1_train.txt")
