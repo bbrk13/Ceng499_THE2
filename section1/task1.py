@@ -18,7 +18,7 @@ def kNN(k, train_set, test_set):
     true_positives_and_negatives = 0.0
     total_number_of_test_instances = 0.0
 
-    for index4, line in enumerate(test_set):
+    for line_index, line in enumerate(test_set):
         total_number_of_test_instances += 1.0
         neighbors_distance_list = []  # sublist - first element = index, second = distance, third = label
         line_length = len(line)
@@ -28,9 +28,14 @@ def kNN(k, train_set, test_set):
             total_distance = 0.0
             line_length2 = len(line2)
             label2 = line2[line_length2 - 1]
-            for index2, feature in enumerate(line2[:line_length2 - 1]):
+
+            """for index2, feature in enumerate(line2[:line_length2 - 1]):
                 tmp_distance = euclidean_distance(float(feature), float(line[index2]))
-                total_distance += tmp_distance
+                total_distance += tmp_distance"""
+            # print("line = {}".format(line))
+            # print("line2 = {}".format(line2))
+            total_distance = euclidean_distance(line, line2)
+
             tmp_list = []
             tmp_list.append(index1)
             tmp_list.append(total_distance)
@@ -94,6 +99,9 @@ def find_best_k(train_set, test_set, num_folds):
 
     result_list = []
 
+    random.shuffle(new_test_data)
+    random.shuffle(new_train_data)
+
     for index4 in range(1, 20, 2):
         total_test_accuracy = 0.0
 
@@ -114,8 +122,12 @@ def get_tuple_second(tuple_parameter):
     return tuple_parameter[1]
 
 
-def euclidean_distance(value1, value2):
-    return (value1 ** 2 + value2 ** 2) ** 0.5
+def euclidean_distance(vector1, vector2):
+    # return (value1 ** 2 + value2 ** 2) ** 0.5
+    distance = 0.0
+    for i in range(len(vector1) - 1):
+        distance += (vector1[i] - vector2[i]) ** 2
+    return distance ** 0.5
 
 
 def get_test_instances_from_file(path_of_test_set):
@@ -124,7 +136,12 @@ def get_test_instances_from_file(path_of_test_set):
     with open(path_of_test_set) as csv_file_2:
         csv_reader_2 = csv.reader(csv_file_2, delimiter=',')
         for row in csv_reader_2:
-            test_instances_local.append(row)
+            tmp_row = []
+            length_of_row = len(row)
+            for index in range(length_of_row - 1):
+                tmp_row.append(float(row[index]))
+            tmp_row.append(row[length_of_row - 1])
+            test_instances_local.append(tmp_row)
     return test_instances_local
 
 
@@ -134,12 +151,20 @@ def get_train_instances_from_file(path_of_train_set):
     with open(path_of_train_set) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
-            train_instances_local.append(row)
+            tmp_row = []
+            length_of_row = len(row)
+            for index in range(length_of_row - 1):
+                tmp_row.append(float(row[index]))
+            tmp_row.append(row[length_of_row - 1])
+            train_instances_local.append(tmp_row)
     return train_instances_local
 
 
 train_instances = get_train_instances_from_file("task1_train.txt")
 test_instances = get_test_instances_from_file("task1_test.txt")
+# k = 3
+# test_accuracy = kNN(k, train_instances, test_instances)
+# print("k = {}, test accuracy = {}".format(k, test_accuracy))
 
 result = find_best_k(train_instances, test_instances, 5)
 print("best k is {} | test accuracy: {} ".format(result[0], result[1]))
